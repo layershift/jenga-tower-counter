@@ -1,6 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {TimerComponent}   from './timer.component';
-import {MovesComponent}   from './moves.component';
 import {LeaderboardComponent}   from './leaderboard.component';
 import {Input} from '@angular/core';
 import {ScoreModel}   from './score.model';
@@ -54,7 +52,7 @@ export class AppComponent implements OnInit {
   resetted = false;
   finished = false;
 
-  winner = {}; // pst everyone is a winner
+  winner:ScoreModel;
 
   scoreboard = [];
 
@@ -74,7 +72,7 @@ export class AppComponent implements OnInit {
   tick(t){
     if (t.countDown < 1){
       t.timerSub.unsubscribe();
-      t.finished.emit(seconds_left);
+      t.finished = true;
     } else {
       var seconds_left = this.countFrom - (Date.now() - t.timerModel.startTime);
       t.countDown = seconds_left;
@@ -107,8 +105,9 @@ export class AppComponent implements OnInit {
     this.moved = false;
     this.resetted = !this.resetted;
     this.finished = false;
-    this.winner = {};
+    this.winner = new ScoreModel();
     this.winner.moves = 0;
+    this.countDown = this.countFrom;
   }
 
   ngOnInit(){
@@ -119,9 +118,9 @@ export class AppComponent implements OnInit {
       }
     }
 
-    this.scoreboard = scoreboard.sort(function(a, b){ return a.score < b.score });
+    this.scoreboard = scoreboard.sort(function(a, b){ return b.score - a.score });
 
-    this.winner = {};
+    this.winner = new ScoreModel();
     this.winner.moves = 0;
   }
 
@@ -136,7 +135,7 @@ export class AppComponent implements OnInit {
 
     // add user to scoreboard
     this.scoreboard.push(user);
-    this.scoreboard = this.scoreboard.sort(function(a, b){ return a.score < b.score });
+    this.scoreboard = this.scoreboard.sort((n1,n2) => n2.score - n1.score);
 
     // serialize scoreboard to localStorage
     window.localStorage.setItem('scoreboard', JSON.stringify(this.scoreboard));

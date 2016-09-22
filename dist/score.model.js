@@ -1,7 +1,7 @@
 "use strict";
 var ScoreModel = (function () {
     function ScoreModel() {
-        this.score = 0;
+        this.moves = 0;
     }
     return ScoreModel;
 }());

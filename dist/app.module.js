@@ -11,8 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require('@angular/core');
 var platform_browser_1 = require('@angular/platform-browser');
 var app_component_1 = require('./app.component');
-var timer_component_1 = require('./timer.component');
-var moves_component_1 = require('./moves.component');
 var leaderboard_component_1 = require('./leaderboard.component');
 var forms_1 = require('@angular/forms');
 var AppModule = (function () {
@@ -23,8 +21,6 @@ var AppModule = (function () {
             imports: [platform_browser_1.BrowserModule, forms_1.FormsModule],
             declarations: [
                 app_component_1.AppComponent,
-                timer_component_1.TimerComponent,
-                moves_component_1.MovesComponent,
                 leaderboard_component_1.LeaderboardComponent
             ],
             bootstrap: [app_component_1.AppComponent]

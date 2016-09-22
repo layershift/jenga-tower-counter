@@ -9,6 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
+var score_model_1 = require('./score.model');
 var Rx_1 = require('rxjs/Rx');
 var timer_model_1 = require('./timer.model');
 var AppComponent = (function () {
@@ -17,7 +18,6 @@ var AppComponent = (function () {
         this.crashed = false;
         this.resetted = false;
         this.finished = false;
-        this.winner = {}; // pst everyone is a winner
         this.scoreboard = [];
         this.started = false;
         this.countFrom = 5 * 6000;
@@ -34,7 +34,7 @@ var AppComponent = (function () {
     AppComponent.prototype.tick = function (t) {
         if (t.countDown < 1) {
             t.timerSub.unsubscribe();
-            t.finished.emit(seconds_left);
+            t.finished = true;
         }
         else {
             var seconds_left = this.countFrom - (Date.now() - t.timerModel.startTime);
@@ -62,8 +62,9 @@ var AppComponent = (function () {
         this.moved = false;
         this.resetted = !this.resetted;
         this.finished = false;
-        this.winner = {};
+        this.winner = new score_model_1.ScoreModel();
         this.winner.moves = 0;
+        this.countDown = this.countFrom;
     };
     AppComponent.prototype.ngOnInit = function () {
         while (scoreboard == null) {
@@ -72,8 +73,8 @@ var AppComponent = (function () {
                 window.localStorage.setItem('scoreboard', '[]');
             }
         }
-        this.scoreboard = scoreboard.sort(function (a, b) { return a.score < b.score; });
-        this.winner = {};
+        this.scoreboard = scoreboard.sort(function (a, b) { return b.score - a.score; });
+        this.winner = new score_model_1.ScoreModel();
         this.winner.moves = 0;
     };
     AppComponent.prototype.enteredName = function () {
@@ -86,7 +87,7 @@ var AppComponent = (function () {
         };
         // add user to scoreboard
         this.scoreboard.push(user);
-        this.scoreboard = this.scoreboard.sort(function (a, b) { return a.score < b.score; });
+        this.scoreboard = this.scoreboard.sort(function (n1, n2) { return n2.score - n1.score; });
         // serialize scoreboard to localStorage
         window.localStorage.setItem('scoreboard', JSON.stringify(this.scoreboard));
     };

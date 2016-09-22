@@ -1,5 +1,6 @@
 export class ScoreModel {
-  public seconds_left:number;
-  public score:number = 0;
-  public player_id: number;
+  public time_left:number;
+  public moves:number = 0;
+  public email:string;
+  public nickname:string;
 }
