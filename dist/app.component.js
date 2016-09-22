@@ -48,6 +48,10 @@ var AppComponent = (function () {
             this.startTimer();
         }
     };
+    AppComponent.prototype.documentKeyUp = function (event) {
+        if (event.keyCode === 13) {
+        }
+    };
     AppComponent.prototype.crash = function () {
         this.finished = true;
         this.winner.time_left = this.countDown;
@@ -93,6 +97,9 @@ var AppComponent = (function () {
     };
     AppComponent = __decorate([
         core_1.Component({
+            host: {
+                '(document:keyup)': 'documentKeyUp($event)'
+            },
             selector: 'my-app',
             template: "\n    <h1>Score Counter</h1>\n\n    <div [hidden]='finished'>\n      <h2 [hidden]=\"countDown < 1\">{{countDown | date:'mm:ss'}}</h2>\n      <h2 [hidden]=\"countDown >= 1\">Finished</h2>\n\n      <h2>{{winner.moves}}</h2>\n\n      <button [hidden]='has_crashed' (click)=\"addMove()\">+</button>\n      <button [hidden]='has_crashed' [hidden]=\"moves == 0\" (click)=\"crash()\">crash</button>\n    </div>\n\n    <br/>\n\n    <div [hidden]='!finished'>\n      <h2>You stacked {{winner.moves}}</h2>\n      <h2 [hidden]='countDown == 0'>But crashed with {{countDown | date:'mm:ss'}} left</h2>\n\n      <div class=\"container\">\n          <form (submit)=\"enteredName()\">\n            <div class=\"form-group\">\n              <label for=\"name\">Enter your email:</label>\n              <input name=\"email\" [(ngModel)]=\"winner.email\" type=\"text\" class=\"form-control\" required>\n            </div>\n            <div class=\"form-group\">\n              <label for=\"alterEgo\">Nickname</label>\n              <input name=\"nickname\" [(ngModel)]=\"winner.nickname\" type=\"text\" class=\"form-control\" />\n            </div>\n            <button type=\"submit\" class=\"btn btn-default\">Submit</button>\n          </form>\n      </div>\n\n      <leaderboard [scores]=\"scoreboard\"></leaderboard>\n\n      <button (click)=\"reset()\">reset</button>\n    </div>\n  "
         }), 

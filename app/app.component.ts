@@ -6,6 +6,9 @@ import {Observable} from 'rxjs/Rx';
 import {TimerModel}   from './timer.model';
 
 @Component({
+  host: {
+    '(document:keyup)': 'documentKeyUp($event)'
+  },
   selector: 'my-app',
   template: `
     <h1>Score Counter</h1>
@@ -85,6 +88,12 @@ export class AppComponent implements OnInit {
 
     if (this.winner.moves == 1){
       this.startTimer();
+    }
+  }
+
+  documentKeyUp(event: KeyboardEvent){
+    if(event.keyCode === 13){
+      
     }
   }
 
