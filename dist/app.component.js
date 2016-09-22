@@ -50,6 +50,7 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.documentKeyUp = function (event) {
         if (event.keyCode === 13) {
+            alert('pushed enter');
         }
     };
     AppComponent.prototype.crash = function () {

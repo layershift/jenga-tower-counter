@@ -93,7 +93,7 @@ export class AppComponent implements OnInit {
 
   documentKeyUp(event: KeyboardEvent){
     if(event.keyCode === 13){
-      
+      alert('pushed enter');
     }
   }
 
