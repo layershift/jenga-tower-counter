@@ -3,4 +3,9 @@ export class ScoreModel {
   public moves:number = 0;
   public email:string;
   public nickname:string;
+
+
+  public joineap:boolean;
+  public launchnotify:boolean;
+
 }

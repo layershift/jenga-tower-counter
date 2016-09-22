@@ -14,7 +14,7 @@ import { Component } from '@angular/core';
         <th>End Time</th>
         <th>Moves</th>
       </tr>
-      <tr *ngFor="let score of scores">
+      <tr *ngFor="let score of scores.slice(0,5)" [ngClass]='highlighted'>
         <td>{{score.nickname}}</td>
         <td>{{score.time_left | date:'mm:ss'}}</td>
         <td>{{score.score}}</td>

@@ -20,7 +20,7 @@ var LeaderboardComponent = (function () {
     LeaderboardComponent = __decorate([
         core_2.Component({
             selector: 'leaderboard',
-            template: "\n\n    <h1>Leaderboard</h1>\n\n    <table>\n      <tr>\n        <th>Name</th>\n        <th>End Time</th>\n        <th>Moves</th>\n      </tr>\n      <tr *ngFor=\"let score of scores\">\n        <td>{{score.nickname}}</td>\n        <td>{{score.time_left | date:'mm:ss'}}</td>\n        <td>{{score.score}}</td>\n      </tr>\n    </table>\n  "
+            template: "\n\n    <h1>Leaderboard</h1>\n\n    <table>\n      <tr>\n        <th>Name</th>\n        <th>End Time</th>\n        <th>Moves</th>\n      </tr>\n      <tr *ngFor=\"let score of scores.slice(0,5)\" [ngClass]='highlighted'>\n        <td>{{score.nickname}}</td>\n        <td>{{score.time_left | date:'mm:ss'}}</td>\n        <td>{{score.score}}</td>\n      </tr>\n    </table>\n  "
         }), 
         __metadata('design:paramtypes', [])
     ], LeaderboardComponent);

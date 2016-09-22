@@ -12,6 +12,9 @@ var core_1 = require('@angular/core');
 var score_model_1 = require('./score.model');
 var Rx_1 = require('rxjs/Rx');
 var timer_model_1 = require('./timer.model');
+var sounds_model_1 = require('./sounds.model');
+require('rxjs/add/operator/debounceTime');
+require('rxjs/add/operator/throttleTime');
 var AppComponent = (function () {
     function AppComponent() {
         this.moved = false;
@@ -25,6 +28,7 @@ var AppComponent = (function () {
         this.timerModel = new timer_model_1.TimerModel();
         this.timer = Rx_1.Observable.timer(0, 500);
         this.timerSub = null;
+        this.nameAdded = false;
     }
     AppComponent.prototype.startTimer = function () {
         var _this = this;
@@ -33,43 +37,61 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.tick = function (t) {
         if (t.countDown < 1) {
+            this.user.time_left = Math.max(0, t.countDown);
             t.timerSub.unsubscribe();
             t.finished = true;
+            this.sounds.gong.play();
+            this.saveScore();
         }
         else {
-            var seconds_left = this.countFrom - (Date.now() - t.timerModel.startTime);
-            t.countDown = seconds_left;
-            t.timerModel.counter++;
+            if (t.countDown > 0) {
+                var seconds_left = t.countFrom - (Date.now() - t.timerModel.startTime);
+                t.countDown = seconds_left;
+                t.timerModel.counter++;
+            }
         }
     };
     AppComponent.prototype.addMove = function () {
-        this.winner.moves++;
-        if (this.winner.moves == 1) {
-            this.startTimer();
+        if (this.nameAdded) {
+            this.user.moves++;
+            //this.sounds.coin.play();
+            if (this.user.moves == 1) {
+                this.startTimer();
+            }
+        }
+    };
+    AppComponent.prototype.documentKeyPress = function (event) {
+        if (event.keyCode === 32) {
+            this.sounds.powerup.play();
         }
     };
     AppComponent.prototype.documentKeyUp = function (event) {
         if (event.keyCode === 13) {
-            alert('pushed enter');
+            this.addMove();
+        }
+        if (event.keyCode === 27) {
+            this.crash();
         }
     };
     AppComponent.prototype.crash = function () {
-        this.finished = true;
-        this.winner.time_left = this.countDown;
-        if (this.timerSub) {
-            this.timerSub.unsubscribe();
+        if (!this.finished) {
+            this.finished = true;
+            this.user.time_left = Math.max(0, this.countDown);
+            if (this.timerSub) {
+                this.timerSub.unsubscribe();
+            }
+            this.sounds.explosion.play();
+            this.saveScore();
         }
-    };
-    AppComponent.prototype.onMoved = function (e) {
-        this.moved = true;
     };
     AppComponent.prototype.reset = function () {
         this.moved = false;
         this.resetted = !this.resetted;
         this.finished = false;
-        this.winner = new score_model_1.ScoreModel();
-        this.winner.moves = 0;
+        this.user = new score_model_1.ScoreModel();
+        this.user.moves = 0;
         this.countDown = this.countFrom;
+        this.nameAdded = false;
     };
     AppComponent.prototype.ngOnInit = function () {
         while (scoreboard == null) {
@@ -79,16 +101,25 @@ var AppComponent = (function () {
             }
         }
         this.scoreboard = scoreboard.sort(function (a, b) { return b.score - a.score; });
-        this.winner = new score_model_1.ScoreModel();
-        this.winner.moves = 0;
+        this.user = new score_model_1.ScoreModel();
+        this.user.moves = 0;
+        this.sounds = new sounds_model_1.SoundsModel();
+        this.sounds.gong = new Audio('dist/gong.wav');
+        this.sounds.powerup = new Audio('dist/powerup.wav');
+        this.sounds.coin = new Audio('dist/coin.wav');
+        this.sounds.explosion = new Audio('dist/explosion.wav');
     };
     AppComponent.prototype.enteredName = function () {
-        // setup the user
+        this.nameAdded = true;
+    };
+    AppComponent.prototype.saveScore = function () {
         var user = {
-            email: this.winner.email,
-            nickname: this.winner.nickname,
-            time_left: this.winner.time_left,
-            score: this.winner.moves
+            email: this.user.email,
+            nickname: this.user.nickname,
+            time_left: this.user.time_left,
+            score: this.user.moves,
+            joineap: this.user.joineap,
+            launchnotify: this.user.launchnotify
         };
         // add user to scoreboard
         this.scoreboard.push(user);
@@ -99,10 +130,11 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         core_1.Component({
             host: {
-                '(document:keyup)': 'documentKeyUp($event)'
+                '(document:keyup)': 'documentKeyUp($event)',
+                '(document:keypress)': 'documentKeyPress($event)'
             },
             selector: 'my-app',
-            template: "\n    <h1>Score Counter</h1>\n\n    <div [hidden]='finished'>\n      <h2 [hidden]=\"countDown < 1\">{{countDown | date:'mm:ss'}}</h2>\n      <h2 [hidden]=\"countDown >= 1\">Finished</h2>\n\n      <h2>{{winner.moves}}</h2>\n\n      <button [hidden]='has_crashed' (click)=\"addMove()\">+</button>\n      <button [hidden]='has_crashed' [hidden]=\"moves == 0\" (click)=\"crash()\">crash</button>\n    </div>\n\n    <br/>\n\n    <div [hidden]='!finished'>\n      <h2>You stacked {{winner.moves}}</h2>\n      <h2 [hidden]='countDown == 0'>But crashed with {{countDown | date:'mm:ss'}} left</h2>\n\n      <div class=\"container\">\n          <form (submit)=\"enteredName()\">\n            <div class=\"form-group\">\n              <label for=\"name\">Enter your email:</label>\n              <input name=\"email\" [(ngModel)]=\"winner.email\" type=\"text\" class=\"form-control\" required>\n            </div>\n            <div class=\"form-group\">\n              <label for=\"alterEgo\">Nickname</label>\n              <input name=\"nickname\" [(ngModel)]=\"winner.nickname\" type=\"text\" class=\"form-control\" />\n            </div>\n            <button type=\"submit\" class=\"btn btn-default\">Submit</button>\n          </form>\n      </div>\n\n      <leaderboard [scores]=\"scoreboard\"></leaderboard>\n\n      <button (click)=\"reset()\">reset</button>\n    </div>\n  "
+            template: "\n    <h1>Score Counter</h1>\n\n    <div class=\"container\" [hidden]='nameAdded'>\n      <form (submit)=\"enteredName()\">\n        <div class=\"form-group\">\n          <label for=\"name\">Enter your email:</label>\n          <input name=\"jenga_email\" type=\"email\" [(ngModel)]=\"user.email\" type=\"text\" class=\"form-control\" autocomplete='off' required />\n          <div *ngIf=\"user.email && user.email.indexOf('@') < 1\" class=\"alert alert-danger\">\n            Email is required\n          </div>\n        </div>\n        <div class=\"form-group\">\n          <label for=\"alterEgo\">Name</label>\n          <input name=\"nickname\" [(ngModel)]=\"user.nickname\" type=\"text\" class=\"form-control\" required />\n        </div>\n\n        Join EAP:\n        <input name=\"joineap\" [(ngModel)]=\"user.joineap\" type=\"checkbox\" class=\"form-control\" required />\n\n        Join launch notification list:\n        <input name=\"launchnotify\" [(ngModel)]=\"user.launchnotify\" type=\"checkbox\" class=\"form-control\" required />\n\n        <button type=\"submit\" class=\"btn btn-default\">Submit</button>\n      </form>\n    </div>\n\n    <div [hidden]='finished || !nameAdded'>\n      <h2 [hidden]=\"countDown < 1\">{{countDown | date:'mm:ss'}}</h2>\n      <h2 [hidden]=\"countDown >= 1\">Finished</h2>\n\n      <h2>{{user.moves}}</h2>\n\n      <button [hidden]='has_crashed' (click)=\"addMove()\">+</button>\n      <button [hidden]='has_crashed' [hidden]=\"moves == 0\" (click)=\"crash()\">crash</button>\n    </div>\n\n    <div [hidden]='!finished'>\n      <div>\n        <h2>You stacked {{user.moves}}</h2>\n\n        <h2 [hidden]='user.time_left == 0'>But crashed with {{user.time_left | date:'mm:ss'}} left</h2>\n      </div>\n\n      <leaderboard [scores]=\"scoreboard\" [hidden]='!nameAdded'></leaderboard>\n\n      <button (click)=\"reset()\">reset</button>\n    </div>\n  "
         }), 
         __metadata('design:paramtypes', [])
     ], AppComponent);
