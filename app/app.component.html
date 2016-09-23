@@ -1,0 +1,102 @@
+<div class="jenga mdl-layout mdl-js-layout has-drawer is-upgraded" [hidden]="nameAdded">
+  <main class="mdl-layout__content">
+    <div class="jenga__posts mdl-grid">
+      <div class="mdl-card something-else mdl-cell mdl-cell--9-col" style="margin: 0 auto; margin-top: -7rem;">
+        <div class="mdl-card__media mdl-color-text--grey-50">
+          <form (submit)="enteredName()" class="text-center">
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="name" name="nickname" [(ngModel)]="user.nickname">
+              <label class="mdl-textfield__label" for="name">Name</label>
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <input class="mdl-textfield__input" type="text" id="email" name="jenga_email" type="email" [(ngModel)]="user.email" autocomplete="off">
+              <label class="mdl-textfield__label" for="email">Email</label>
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-1">
+                <input type="checkbox" id="checkbox-1" class="mdl-checkbox__input" checked>
+                <span class="mdl-checkbox__label">Give me early access to Enscale</span>
+              </label>
+
+              <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-2">
+                <input type="checkbox" id="checkbox-2" class="mdl-checkbox__input">
+                <span class="mdl-checkbox__label">Notify me when Enscale launches</span>
+              </label>
+            </div>
+
+            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="width: 300px; background-color: #82a9c1;">Register</button>
+
+          </form>
+        </div>
+        <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
+          <i class="fa fa-wpforms fa-2x"></i>
+          <strong>REGISTRATION</strong>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div class="mdl-layout__obfuscator"></div>
+</div>
+
+
+
+<div class="jenga mdl-layout mdl-js-layout has-drawer is-upgraded" *ngIf='!finished && nameAdded'>
+  <main class="mdl-layout__content">
+    <div class="jenga__posts mdl-grid">
+      <div class="mdl-card something-else mdl-cell mdl-cell--8-col">
+        <div class="mdl-card__media mdl-color-text--grey-50">
+          <span [hidden]="countDown < 1">{{countDown | date:'mm:ss'}}</span>
+          <span [hidden]="countDown >= 1">Finished</span>
+        </div>
+        <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
+          <i class="fa fa-clock-o fa-2x"></i>
+          <strong>TIMER</strong>
+        </div>
+      </div>
+      <div class="mdl-card something-else mdl-cell mdl-cell--8-col mdl-cell--4-col-desktop">
+
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="tt1"><strong>Crash</strong></div>
+
+        <div class="mdl-tooltip mdl-tooltip--large" data-mdl-for="tt2"><strong>Add</strong></div>
+
+        <div class="mdl-card__media mdl-color--white mdl-color-text--grey-600">
+          <span class="mdl-chip__contact mdl-color--teal mdl-color-text--white">{{user.moves}}</span>
+        </div>
+        <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
+          <i class="fa fa-pencil-square-o fa-2x"></i>
+          <strong>SCORE</strong>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div class="mdl-layout__obfuscator"></div>
+</div>
+
+
+<div class="jenga mdl-layout mdl-js-layout has-drawer is-upgraded" *ngIf='finished'>
+  <main class="mdl-layout__content">
+    <div class="jenga__posts mdl-grid">
+      <div class="mdl-card something-else mdl-cell mdl-cell--8-col" style="margin: 0 auto; margin-top: -9rem;">
+        <div class="mdl-card__media mdl-color-text--grey-50">
+          <div class="text-center" style="margin: 0 auto; margin-top: -9rem;">
+            <h3>You stacked <strong>{{user.moves}}</strong></h3>
+            <h3 [hidden]='user.time_left == 0'>But crashed with <strong>{{user.time_left | date:'mm:ss'}}</strong> left</h3>
+          </div>
+
+          <leaderboard [scores]="scoreboard" [hidden]='!nameAdded'></leaderboard>
+
+        </div>
+        <div class="mdl-card__supporting-text meta mdl-color-text--grey-600">
+          <i class="fa fa-pie-chart fa-2x"></i>
+          <strong>LEADERBOARD</strong>
+          <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="right: 20px; position: absolute;" (click)="reset()">Reset</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div class="mdl-layout__obfuscator"></div>
+</div>
+

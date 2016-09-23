@@ -14,55 +14,7 @@ import 'rxjs/add/operator/throttleTime';
     '(document:keypress)': 'documentKeyPress($event)'
   },
   selector: 'my-app',
-  template: `
-    <h1>Score Counter</h1>
-
-    <div class="container" [hidden]='nameAdded'>
-      <form (submit)="enteredName()">
-        <div class="form-group">
-          <label for="name">Enter your email:</label>
-          <input name="jenga_email" type="email" [(ngModel)]="user.email" type="text" class="form-control" autocomplete='off' required />
-          <div *ngIf="user.email && user.email.indexOf('@') < 1" class="alert alert-danger">
-            Email is required
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="alterEgo">Name</label>
-          <input name="nickname" [(ngModel)]="user.nickname" type="text" class="form-control" required />
-        </div>
-
-        Join EAP:
-        <input name="joineap" [(ngModel)]="user.joineap" type="checkbox" class="form-control" required />
-
-        Join launch notification list:
-        <input name="launchnotify" [(ngModel)]="user.launchnotify" type="checkbox" class="form-control" required />
-
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form>
-    </div>
-
-    <div [hidden]='finished || !nameAdded'>
-      <h2 [hidden]="countDown < 1">{{countDown | date:'mm:ss'}}</h2>
-      <h2 [hidden]="countDown >= 1">Finished</h2>
-
-      <h2>{{user.moves}}</h2>
-
-      <button [hidden]='has_crashed' (click)="addMove()">+</button>
-      <button [hidden]='has_crashed' [hidden]="moves == 0" (click)="crash()">crash</button>
-    </div>
-
-    <div [hidden]='!finished'>
-      <div>
-        <h2>You stacked {{user.moves}}</h2>
-
-        <h2 [hidden]='user.time_left == 0'>But crashed with {{user.time_left | date:'mm:ss'}} left</h2>
-      </div>
-
-      <leaderboard [scores]="scoreboard" [hidden]='!nameAdded'></leaderboard>
-
-      <button (click)="reset()">reset</button>
-    </div>
-  `
+  templateUrl: 'app/app.component.html'
 })
 export class AppComponent implements OnInit {
   moved = false;
